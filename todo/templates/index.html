@@ -18,11 +18,16 @@
     <ul>
         {% for task in tasks %}
             <li>
-                {% if task.completed %}
-                    <s>{{ task.title }}</s> (Выполнено)
-                {% else %}
-                    <b>{{ task.title }}</b>
-                {% endif %}
+                <a href="{% url 'toggle_task' task.id %}" style="text-decoration: none; color: black;">
+                    {% if task.completed %}
+                        <s>{{ task.title }}</s> (Выполнено) 🟢
+                    {% else %}
+                        <b>{{ task.title }}</b> 🔴
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'delete_task' task.id %}" style="color: red; text-decoration: none; margin-left: 15px;">[Удалить]</a>
+                <a href="{% url 'edit_task' task.id %}" style="color: blue; text-decoration: none; margin-left: 10px;">[Изменить]</a>
             </li>
         {% empty %}
             <li>Задач пока нет! Создай первую.</li>

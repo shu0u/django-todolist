@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from todo.models import Task
 
 def home(request):
@@ -17,3 +17,25 @@ def home(request):
     }
 
     return render(request, 'index.html', context)
+
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    task.delete()
+    return redirect('home')
+
+def toggle_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    task.completed = not task.completed
+    task.save()
+    return redirect('home')
+
+def edit_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    if request.method == 'POST':
+        new_title = request.POST.get('title')
+        if new_title:
+            task.title = new_title
+            task.save()
+            return redirect('home')
+    return render(request, 'edit.html', {'task': task})
