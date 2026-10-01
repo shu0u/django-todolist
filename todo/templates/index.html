@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мой TODO Список</title>
+</head>
+<body>
+    <h1>Список дел на сегодня:</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Введите новую задачу..." required>
+        <button type="submit">Добавить</button>
+    </form>
+
+    <hr>
+
+    <ul>
+        {% for task in tasks %}
+            <li>
+                {% if task.completed %}
+                    <s>{{ task.title }}</s> (Выполнено)
+                {% else %}
+                    <b>{{ task.title }}</b>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>Задач пока нет! Создай первую.</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
