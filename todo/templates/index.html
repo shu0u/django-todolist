@@ -5,6 +5,7 @@
     <title>Мой TODO Список</title>
 </head>
 <body>
+    <p>Вы вошли как: <b>{{ request.user.username }}</b> | <a href="/admin/logout/">[Выйти]</a></p>
     <h1>Список дел на сегодня:</h1>
 
     <form method="POST">
