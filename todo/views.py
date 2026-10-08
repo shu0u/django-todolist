@@ -103,5 +103,4 @@ def signup(request):
 def completed_tasks(request):
     tasks = Task.objects.filter(user=request.user, completed=True)
     request.user
-
     return render(request, 'completed.html', {'tasks': tasks})
