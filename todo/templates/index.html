@@ -2,38 +2,61 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Мой TODO Список</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <p>Вы вошли как: <b>{{ request.user.username }}</b> | <a href="/admin/logout/">[Выйти]</a></p>
-    <h1>Список дел на сегодня:</h1>
+<body class="bg-light">
 
-    <form method="POST">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">TODO Manager</a>
+        <div class="ms-auto d-flex align-items-center">
+            {% if user.is_authenticated %}
+                <span class="text-white me-3">Вы вошли как: <b>{{ user.username }}</b></span>
+                <a href="{% url 'completed_tasks' %}" class="btn btn-outline-light btn-sm me-2">Выполненные</a>
+                <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm me-2">Войти</a>
+                <a href="{% url 'signup' %}" class="btn btn-light btn-sm">Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h1 class="mb-4">Список дел на сегодня:</h1>
+
+    <form method="POST" class="mb-4">
         {% csrf_token %}
-        <input type="text" name="title" placeholder="Введите новую задачу..." required>
-        <button type="submit">Добавить</button>
+        <div class="input-group">
+            <input type="text" name="title" class="form-control" placeholder="Введите новую задачу..." required>
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
     </form>
 
-    <hr>
-
-    <ul>
+    <ul class="list-group">
         {% for task in tasks %}
-            <li>
-                <a href="{% url 'toggle_task' task.id %}" style="text-decoration: none; color: black;">
-                    {% if task.completed %}
-                        <s>{{ task.title }}</s> (Выполнено) 🟢
-                    {% else %}
-                        <b>{{ task.title }}</b> 🔴
-                    {% endif %}
-                </a>
-
-                <a href="{% url 'delete_task' task.id %}" style="color: red; text-decoration: none; margin-left: 15px;">[Удалить]</a>
-                <a href="{% url 'edit_task' task.id %}" style="color: blue; text-decoration: none; margin-left: 10px;">[Изменить]</a>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span {% if task.completed %}class="text-decoration-line-through text-muted"{% endif %}>
+                    {{ task.title }}
+                </span>
+                <div>
+                    <a href="{% url 'toggle_task' task.id %}" class="btn btn-sm btn-outline-success">
+                        {% if task.completed %}Вернуть{% else %}Готово{% endif %}
+                    </a>
+                    <a href="{% url 'edit_task' task.id %}" class="btn btn-sm btn-outline-warning">Изменить</a>
+                    <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                </div>
             </li>
         {% empty %}
-            <li>Задач пока нет! Создай первую.</li>
+            <li class="list-group-item text-center text-muted">Задач пока нет. Создай первую.</li>
         {% endfor %}
     </ul>
+</div>
 
 </body>
 </html>

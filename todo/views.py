@@ -6,6 +6,8 @@ from todo.serializers import TaskSerializer
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from todo.models import Task
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
 @login_required
 def home(request):
@@ -33,14 +35,14 @@ def delete_task(request, task_id):
 
 @login_required
 def toggle_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, user=request.user)
     task.completed = not task.completed
     task.save()
     return redirect('home')
 
 @login_required
 def edit_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, user=request.user)
 
     if request.method == 'POST':
         new_title = request.POST.get('title')
@@ -85,3 +87,21 @@ def api_task_detail(request, pk):
     elif request.method == 'DELETE':
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})
+
+@login_required
+def completed_tasks(request):
+    tasks = Task.objects.filter(user=request.user, completed=True)
+    request.user
+
+    return render(request, 'completed.html', {'tasks': tasks})
