@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from todo.models import Task
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.views.decorators.http import require_POST
 
 @login_required
 def home(request):
@@ -28,12 +29,14 @@ def home(request):
     return render(request, 'index.html', context)
 
 @login_required
+@require_POST
 def delete_task(request, task_id):
     task = get_object_or_404(Task, id=task_id, user=request.user)
     task.delete()
     return redirect('home')
 
 @login_required
+@require_POST
 def toggle_task(request, task_id):
     task = get_object_or_404(Task, id=task_id, user=request.user)
     task.completed = not task.completed

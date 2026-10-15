@@ -44,12 +44,20 @@
                 <span {% if task.completed %}class="text-decoration-line-through text-muted"{% endif %}>
                     {{ task.title }}
                 </span>
-                <div>
-                    <a href="{% url 'toggle_task' task.id %}" class="btn btn-sm btn-outline-success">
-                        {% if task.completed %}Вернуть{% else %}Готово{% endif %}
-                    </a>
+                <div class="d-flex gap-1">
+                    <form method="POST" action="{% url 'toggle_task' task.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-success">
+                            {% if task.completed %}Вернуть{% else %}Готово{% endif %}
+                        </button>
+                    </form>
+
                     <a href="{% url 'edit_task' task.id %}" class="btn btn-sm btn-outline-warning">Изменить</a>
-                    <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+
+                    <form method="POST" action="{% url 'delete_task' task.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                    </form>
                 </div>
             </li>
         {% empty %}
