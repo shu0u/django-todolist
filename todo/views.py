@@ -9,14 +9,17 @@ from todo.models import Task
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.views.decorators.http import require_POST
+from .forms import TaskForm
 
 @login_required
 def home(request):
     if request.method == "POST":
-        task_title = request.POST.get('title')
+        form = TaskForm(request.POST)
 
-        if task_title:
-            Task.objects.create(title=task_title, user=request.user)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
 
         return redirect('home')
     
